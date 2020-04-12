@@ -1,0 +1,147 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <script type="text/javascript" src="{% static 'neuralnetwork/js/Chart.min.js' %}"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'neuralnetwork/css/style.css' %}" type="text/css">
+
+
+    <title>Neural network console</title>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row my-3">
+        <div class="col-md-3">
+            <div class="card p-3">
+                <h4 class=" my-3">Neural Network Console</h4>
+                <button type="button" class="btn btn-info btn-md btn-block my-3">Start</button>
+
+                <h6 class="text-uppercase font-weight-bold mb-3">Training parameters</h6>
+
+
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="input-group flex-nowrap">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="addon-wrapping">Batch</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="64" aria-label="Username"
+                               aria-describedby="addon-wrapping">
+                    </div>
+                </div>
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="input-group flex-nowrap">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="addon-wrapping">Epoch</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="30" aria-label="Username"
+                               aria-describedby="addon-wrapping">
+                    </div>
+                </div>
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Test Data</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="10"  aria-label="Amount (to the nearest dollar)">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Val Data</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="10" aria-label="Amount (to the nearest dollar)">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
+                <h6 class="text-uppercase mt-5 mb-3 font-weight-bold">Size</h6>
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="filter-size-1">
+                        <label class="custom-control-label" for="filter-size-1">X-Small</label>
+                    </div>
+                </div>
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="filter-size-2">
+                        <label class="custom-control-label" for="filter-size-2">Small</label>
+                    </div>
+                </div>
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="filter-size-3">
+                        <label class="custom-control-label" for="filter-size-3">Medium</label>
+                    </div>
+                </div>
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="filter-size-4">
+                        <label class="custom-control-label" for="filter-size-4">Large</label>
+                    </div>
+                </div>
+                <div class="mt-2 mb-2 pl-2">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="filter-size-5">
+                        <label class="custom-control-label" for="filter-size-5">X-Large</label>
+                    </div>
+                </div>
+                <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
+                <h6 class="text-uppercase mt-5 mb-3 font-weight-bold">Price</h6>
+                <div class="price-filter-control">
+                    <input type="number" class="form-control w-50 pull-left mb-2" value="50" id="price-min-control">
+                    <input type="number" class="form-control w-50 pull-right" value="150" id="price-max-control">
+                </div>
+                <input id="ex2" type="text" class="slider " value="50,150" data-slider-min="10" data-slider-max="200"
+                       data-slider-step="5" data-slider-value="[50,150]" data-value="50,150" style="display: none;">
+                <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
+                <a href="#" class="btn btn-lg btn-block btn-primary mt-5">Update Results</a>
+            </div>
+
+        </div>
+        <div class="col-md-9">
+            <div class="card p-3 mb-3">
+                <div class="row px-3">
+                    <input class="btn btn-primary col-3 mr-3" type="button" value="New">
+                    <input class="btn btn-primary col-3" type="button" value="Load">
+                </div>
+            </div>
+            <div class="card p-3 mb-3">
+                <canvas id="test_accuracy_chart"></canvas>
+
+            </div>
+            <div class="card p-3 mb-3">
+                <canvas id="test_loss_chart"></canvas>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+</body>
+</html>
