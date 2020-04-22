@@ -12,7 +12,24 @@
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'neuralnetwork/css/style.css' %}" type="text/css">
 
+ <script>
+     console.log(window.location)
+    var socket = new WebSocket('ws://' + window.location.host + window.location.pathname);
 
+    socket.onmessage = function(e) {
+      console.log('WebSockets onmessage.');
+    };
+    socket.onopen = function(e) {
+      console.log('WebSockets onopen.');
+    };
+    socket.onerror = function(e) {
+      console.log('WebSockets onerror.');
+    };
+    socket.onclose = function(e) {
+      console.log('WebSockets onclose.');
+    };
+
+  </script>
     <title>Neural network console</title>
 </head>
 <body>
@@ -21,10 +38,19 @@
         <div class="col-md-3">
             <div class="card p-3">
                 <h4 class=" my-3">Neural Network Console</h4>
-                <button type="button" class="btn btn-info btn-md btn-block my-3">Start</button>
 
                 <h6 class="text-uppercase font-weight-bold mb-3">Training parameters</h6>
 
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group mt-2 mb-2 pl-2">
+                        {{ form.type }}
+                    </div>
+                    <div class="form-group mt-2 mb-2 pl-2">
+                        {{ form.script }}
+                    </div>
+                <button type="submit" class="btn btn-info btn-md btn-block my-3">Start</button>
+                </form>
 
                 <div class="mt-2 mb-2 pl-2">
                     <div class="input-group flex-nowrap">
@@ -49,7 +75,8 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Test Data</span>
                         </div>
-                        <input type="text" class="form-control" placeholder="10"  aria-label="Amount (to the nearest dollar)">
+                        <input type="text" class="form-control" placeholder="10"
+                               aria-label="Amount (to the nearest dollar)">
                         <div class="input-group-append">
                             <span class="input-group-text">%</span>
                         </div>
@@ -60,7 +87,8 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Val Data</span>
                         </div>
-                        <input type="text" class="form-control" placeholder="10" aria-label="Amount (to the nearest dollar)">
+                        <input type="text" class="form-control" placeholder="10"
+                               aria-label="Amount (to the nearest dollar)">
                         <div class="input-group-append">
                             <span class="input-group-text">%</span>
                         </div>
@@ -115,8 +143,7 @@
         <div class="col-md-9">
             <div class="card p-3 mb-3">
                 <div class="row px-3">
-                    <input class="btn btn-primary col-3 mr-3" type="button" value="New">
-                    <input class="btn btn-primary col-3" type="button" value="Load">
+                    <input class="btn btn-primary col-3" type="button" value="Start">
                 </div>
             </div>
             <div class="card p-3 mb-3">
@@ -131,17 +158,41 @@
     </div>
 
 </div>
-</div>
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
+{% csrf_token %}
+<script>
+    $('#train').submit(function (e) {
+        e.preventDefault();
+        url = '/trainingsession/'
+        enctype= 'multipart/form-data'
+        data = $(this).serialize();
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            async: false,
+            cache: false,
+            contentType: 'false',
+            processData: false,
+            success: function () {
+                alert('Form Submitted!');
+            },
+            error: function(){
+                alert("error in ajax form submission");
+            }
+        });
+
+    });
+
+</script>
 </body>
 </html>

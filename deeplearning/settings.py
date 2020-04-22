@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import stat
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = ')pqo%5n5@b4#*ipv7@3vl&&#^s_hs_av!(n+)!#7%ra^qp!jfj'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
+    'trainingsession',
+    'dashboard',
+
+
 ]
 
 MIDDLEWARE = [
@@ -68,6 +74,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = "deeplearning.routing.application"
 WSGI_APPLICATION = 'deeplearning.wsgi.application'
 
 
@@ -123,3 +130,17 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static")
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('localhost', 6379)],
+        }
+    }
+}
+
+MEDIA_URL = '/home/lacen/PycharmProjects/deeplearning/'
+MEDIA_ROOT = os.path.join('/home/lacen/PycharmProjects/deeplearning')
+
+FILE_UPLOAD_PERMISSIONS = stat.S_IRWXU

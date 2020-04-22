@@ -17,7 +17,9 @@ from django.contrib import admin
 from django.urls import path
 
 from dashboard import views
+from dashboard.views import TrainingSessionListView, TrainingSessionDetailView
 
 urlpatterns = [
-    path('', views.index, name='dashboard'),
+    path('', TrainingSessionListView.as_view(), name='dashboard'),
+    path('session/<int:pk>/', TrainingSessionDetailView.as_view(), name='session-detail'),
 ]
