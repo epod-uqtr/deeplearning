@@ -22,7 +22,7 @@ def main(time):
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=['accuracy'])
-    model.fit(train_images, train_labels, epochs=2, batch_size=64, callbacks=[KafkaCallback()])
+    model.fit(train_images, train_labels, epochs=2, batch_size=64, callbacks=[KafkaCallback])
     test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
 
     print('\nTest accuracy:', test_acc)

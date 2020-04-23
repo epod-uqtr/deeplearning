@@ -5,35 +5,55 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <script type="text/javascript" src="{% static 'neuralnetwork/js/Chart.min.js' %}"></script>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'neuralnetwork/css/style.css' %}" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
- <script>
-     console.log(window.location)
-    var socket = new WebSocket('ws://' + window.location.host + window.location.pathname);
+    <script>
+        var data = {data: [12, 19, 3, 5, 2, 3]}
+        var config = {
+            type: 'line',
+            data: {
+                datasets: [data],
+                labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"]
+            },
+            options: {
+                responsive: true
+            }
+        };
 
-    socket.onmessage = function(e) {
-      console.log('WebSockets onmessage.');
-    };
-    socket.onopen = function(e) {
-      console.log('WebSockets onopen.');
-    };
-    socket.onerror = function(e) {
-      console.log('WebSockets onerror.');
-    };
-    socket.onclose = function(e) {
-      console.log('WebSockets onclose.');
-    };
+        window.onload = function () {
+            var ctx = document.getElementById('train_accuracy_chart').getContext('2d');
+            window.myPie = new Chart(ctx, config);
+        };
+        console.log(window.location)
+        var socket = new WebSocket('ws://' + window.location.host + window.location.pathname);
 
-  </script>
+        socket.onmessage = function (e) {
+            console.log('WebSockets onmessage.');
+            console.log(e);
+        };
+        socket.onopen = function (e) {
+            console.log('WebSockets onopen.');
+        };
+        socket.onerror = function (e) {
+            console.log('WebSockets onerror.');
+        };
+        socket.onclose = function (e) {
+            console.log('WebSockets onclose.');
+        };
+
+
+    </script>
     <title>Neural network console</title>
 </head>
 <body>
+
 <div class="container-fluid">
+
     <div class="row my-3">
         <div class="col-md-3">
             <div class="card p-3">
@@ -49,7 +69,7 @@
                     <div class="form-group mt-2 mb-2 pl-2">
                         {{ form.script }}
                     </div>
-                <button type="submit" class="btn btn-info btn-md btn-block my-3">Start</button>
+                    <button type="submit" class="btn btn-info btn-md btn-block my-3">Start</button>
                 </form>
 
                 <div class="mt-2 mb-2 pl-2">
@@ -147,11 +167,27 @@
                 </div>
             </div>
             <div class="card p-3 mb-3">
+                <canvas id="train_accuracy_chart" width="800" height="450"></canvas>
+
+            </div>
+            <div class="card p-3 mb-3">
+                <canvas id="train_loss_chart"></canvas>
+
+            </div>
+            <div class="card p-3 mb-3">
                 <canvas id="test_accuracy_chart"></canvas>
 
             </div>
             <div class="card p-3 mb-3">
                 <canvas id="test_loss_chart"></canvas>
+
+            </div>
+            <div class="card p-3 mb-3">
+                <canvas id="predict_accuracy_chart"></canvas>
+
+            </div>
+            <div class="card p-3 mb-3">
+                <canvas id="predict_loss_chart"></canvas>
 
             </div>
         </div>
@@ -172,7 +208,7 @@
     $('#train').submit(function (e) {
         e.preventDefault();
         url = '/trainingsession/'
-        enctype= 'multipart/form-data'
+        enctype = 'multipart/form-data'
         data = $(this).serialize();
 
         $.ajax({
@@ -186,7 +222,7 @@
             success: function () {
                 alert('Form Submitted!');
             },
-            error: function(){
+            error: function () {
                 alert("error in ajax form submission");
             }
         });
