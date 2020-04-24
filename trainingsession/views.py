@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 from subprocess import Popen
@@ -22,12 +23,16 @@ def index(request):
                                        type=form.cleaned_data['type'],
                                        script=request.FILES['script'])
             instance.save()
+        return HttpResponse('<h1>Report</h1>')
     else:
         form = TrainingSessionForm()
-    return render(request, 'trainingsession/index.html', {
-        'form': form
-    })
+        return render(request, 'trainingsession/index.html', {
+            'form': form
+        })
 
+
+def report(request):
+    pass
 
 @receiver(post_save, sender=TrainingSession)
 def my_callback(sender, instance, created, **kwargs):

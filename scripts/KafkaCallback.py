@@ -26,6 +26,8 @@ class KafkaCallback(tf.keras.callbacks.Callback):
                      "group.id": consumer_group_id,
                      "auto.offset.reset": "earliest"}
     consumer = Consumer(consumer_conf)
+    channel_layer = get_channel_layer()
+    i_train = 0
 
 
     def on_train_begin(self, logs=None):
@@ -58,7 +60,6 @@ class KafkaCallback(tf.keras.callbacks.Callback):
             )
 
     def on_train_batch_end(self, batch, logs=None):
-        channel_layer = get_channel_layer()
         self.train_id += 1
         value = {
             "id": self.train_id,
@@ -70,24 +71,13 @@ class KafkaCallback(tf.keras.callbacks.Callback):
         # self.producer.poll(0)
         # self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
         #                       callback=self.delivery_report)
-        async_to_sync(channel_layer.group_send)(
-            "zinnour",
-            {"type": "consume_msg",
-             "id": self.train_id,
-             "method": "train",
-             "batch": batch,
-             "loss": logs["loss"],
-             "accuracy": logs["accuracy"]}
-        )
+        if batch % 10 == 0:
+            print(batch)
+            async_to_sync(self.channel_layer.group_send)("zinnour",
+                {"type": "training_session_message",
+                 'data': json.dumps(value)})
+        self.i_train = self.i_train + 1
         # self.producer.flush()
-
-    def consume_msg(self, event):
-        message = event["text"]
-
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({
-            'message': message
-        }))
 
     def on_test_batch_end(self, batch, logs=None):
         self.test_id += 1
