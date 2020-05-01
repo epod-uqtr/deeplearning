@@ -68,11 +68,10 @@ class KafkaCallback(tf.keras.callbacks.Callback):
             "loss": logs["loss"],
             "accuracy": logs["accuracy"]
         }
-        # self.producer.poll(0)
-        # self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
-        #                       callback=self.delivery_report)
+        self.producer.poll(0)
+        self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
+                              callback=self.delivery_report)
         if batch % 10 == 0:
-            print(batch)
             async_to_sync(self.channel_layer.group_send)("zinnour",
                 {"type": "training_session_message",
                  'data': json.dumps(value)})
@@ -91,6 +90,10 @@ class KafkaCallback(tf.keras.callbacks.Callback):
         self.producer.poll(0)
         self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
                               callback=self.delivery_report)
+
+        async_to_sync(self.channel_layer.group_send)("zinnour",
+            {"type": "training_session_message",
+             'data': json.dumps(value)})
 
     def on_predict_batch_end(self, batch, logs=None):
         self.predict_id += 1

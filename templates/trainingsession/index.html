@@ -13,22 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
     <script>
-        chartColors = [
-            'rgb(132,176,29)',
-            'rgb(255, 159, 64)',
-            'rgb(224,220,5)',
-            'rgb(75, 192, 192)',
-            'rgb(54, 162, 235)',
-            'rgb(196,140,245)',
-            'rgb(12,231,12)',
-            'rgb(36,98,47)',
-            'rgb(231,12,19)',
-            'rgb(140,12,231)',
-        ];
+
         console.log(window.location)
         var socket = new WebSocket('ws://' + window.location.host + window.location.pathname);
-
-
         socket.onopen = function (e) {
             console.log('WebSockets onopen.');
         };
@@ -40,60 +27,131 @@
 
         };
 
-        function addData(chart, epoch) {
-            var x=Math.round(0xffffff * Math.random()).toString(16);
-            var y=(6-x.length);
-            var z="000000";
-            var z1 = z.substring(0,y);
-            var color= "#" + z1 + x;
+        function addData(chart1, chart2, epoch) {
+            var x = Math.round(0xffffff * Math.random()).toString(16);
+            var y = (6 - x.length);
+            var z = "000000";
+            var z1 = z.substring(0, y);
+            var color = "#" + z1 + x;
 
-            data = {
+            var data1 = {
                 data: [],
                 label: 'Epoch ' + epoch,
                 borderColor: color,
                 backgroundColor: color,
                 fill: false,
             }
-            chart.data.datasets.unshift(data);
-            chart.update();
+            var data2 = {
+                data: [],
+                label: 'Epoch ' + epoch,
+                borderColor: color,
+                backgroundColor: color,
+                fill: false,
+            }
+            chart1.data.datasets.unshift(data1);
+            chart2.data.datasets.unshift(data2);
+            chart1.update();
+            chart2.update();
         }
 
-        function appendData(chart, value, index) {
-            chart.data.datasets[0].data.push(value);
-            chart.update();
+        function appendLabel(chart1, chart2, value) {
+            chart1.data.labels.push(value);
+            chart2.data.labels.push(value);
+            chart1.update();
+            chart2.update();
         }
 
-        function appendLabel(chart, value) {
-            chart.data.labels.push(value);
-            chart.update();
+        function appendData(chart1, chart2, value1, value2, index) {
+            chart1.data.datasets[0].data.push(value1);
+            chart2.data.datasets[0].data.push(value2);
+            chart1.update();
+            chart2.update();
         }
 
-        ctx = undefined
-        chart = undefined
+        var chart_train_accuracy
+        var chart_train_loss
+        var chart_test_accuracy
+        var chart_test_loss
         window.onload = function () {
-            ctx = document.getElementById("train_accuracy_chart");
-            chart = new Chart(ctx, {
+            chart_train_accuracy = new Chart(document.getElementById("train_accuracy_chart"), {
                 type: 'line',
                 data: {
                     labels: [],
                     datasets: []
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Train accuracy'
+                    }
                 }
             });
-
+            chart_train_loss = new Chart(document.getElementById("train_loss_chart"), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Train loss'
+                    }
+                }
+            });
+            chart_test_accuracy = new Chart(document.getElementById("test_accuracy_chart"), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Test accuracy'
+                    }
+                }
+            });
+            chart_test_loss = new Chart(document.getElementById("test_loss_chart"), {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Test loss'
+                    }
+                }
+            });
         }
         var i_train = -1
+        var i_test = -1
 
         socket.onmessage = function (e) {
             var data = JSON.parse(e.data)
-            console.log(data.batch)
-            if (data.batch === 0) {
-                i_train = i_train + 1
-                addData(chart, i_train)
+            console.log(data.accuracy)
+            if (data.method === 'train') {
+                if (data.batch === 0) {
+                    i_train = i_train + 1
+                    addData(chart_train_accuracy, chart_train_loss, i_train)
+                }
+                if (i_train === 0) {
+                    appendLabel(chart_train_accuracy, chart_train_loss, data.batch)
+                }
+                appendData(chart_train_accuracy, chart_train_loss, data.accuracy, data.loss, i_train)
             }
-            if (i_train === 0) {
-                appendLabel(chart, data.batch)
+            if (data.method === 'test') {
+                if (data.batch === 0) {
+                    i_test = i_test + 1
+                    addData(chart_test_accuracy, chart_test_loss, i_test)
+                }
+                if (i_test === 0) {
+                    appendLabel(chart_test_accuracy, chart_test_loss, data.batch)
+                }
+                appendData(chart_test_accuracy, chart_test_loss, data.accuracy, data.loss, i_test)
             }
-            appendData(chart, data.loss, i_train)
 
 
         };
@@ -111,10 +169,10 @@
             <div class="card p-3">
                 <h4 class=" my-3">Neural Network Console</h4>
 
-                <h6 class="text-uppercase font-weight-bold mb-3">Training parameters</h6>
 
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
+
                     <div class="form-group mt-2 mb-2 pl-2">
                         {{ form.type }}
                     </div>
@@ -124,6 +182,7 @@
                     <button onclick="train" class="btn btn-info btn-md btn-block my-3">Start</button>
                 </form>
 
+                <h6 class="text-uppercase font-weight-bold mb-3">Training parameters</h6>
                 <div class="mt-2 mb-2 pl-2">
                     <div class="input-group flex-nowrap">
                         <div class="input-group-prepend">
@@ -168,39 +227,39 @@
                 </div>
 
                 <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
-                <h6 class="text-uppercase mt-5 mb-3 font-weight-bold">Size</h6>
+                <h6 class="text-uppercase mt-5 mb-3 font-weight-bold">Option</h6>
                 <div class="mt-2 mb-2 pl-2">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="filter-size-1">
-                        <label class="custom-control-label" for="filter-size-1">X-Small</label>
+                        <label class="custom-control-label" for="filter-size-1">Option</label>
                     </div>
                 </div>
                 <div class="mt-2 mb-2 pl-2">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="filter-size-2">
-                        <label class="custom-control-label" for="filter-size-2">Small</label>
+                        <label class="custom-control-label" for="filter-size-2">Option</label>
                     </div>
                 </div>
                 <div class="mt-2 mb-2 pl-2">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="filter-size-3">
-                        <label class="custom-control-label" for="filter-size-3">Medium</label>
+                        <label class="custom-control-label" for="filter-size-3">Option</label>
                     </div>
                 </div>
                 <div class="mt-2 mb-2 pl-2">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="filter-size-4">
-                        <label class="custom-control-label" for="filter-size-4">Large</label>
+                        <label class="custom-control-label" for="filter-size-4">Option</label>
                     </div>
                 </div>
                 <div class="mt-2 mb-2 pl-2">
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" id="filter-size-5">
-                        <label class="custom-control-label" for="filter-size-5">X-Large</label>
+                        <label class="custom-control-label" for="filter-size-5">Option</label>
                     </div>
                 </div>
                 <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
-                <h6 class="text-uppercase mt-5 mb-3 font-weight-bold">Price</h6>
+                <h6 class="text-uppercase mt-5 mb-3 font-weight-bold">Option</h6>
                 <div class="price-filter-control">
                     <input type="number" class="form-control w-50 pull-left mb-2" value="50" id="price-min-control">
                     <input type="number" class="form-control w-50 pull-right" value="150" id="price-max-control">
@@ -208,7 +267,7 @@
                 <input id="ex2" type="text" class="slider " value="50,150" data-slider-min="10" data-slider-max="200"
                        data-slider-step="5" data-slider-value="[50,150]" data-value="50,150" style="display: none;">
                 <div class="divider mt-5 mb-5 border-bottom border-secondary"></div>
-                <a href="#" class="btn btn-lg btn-block btn-primary mt-5">Update Results</a>
+                <a href="#" class="btn btn-lg btn-block btn-primary mt-5">Update parameters</a>
             </div>
 
         </div>
