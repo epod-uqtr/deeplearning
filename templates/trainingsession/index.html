@@ -27,7 +27,11 @@
 
         };
 
-        function addData(chart1, chart2, epoch) {
+        function addData(chart1, chart2, epoch, i) {
+            if (epoch > 0 && i < 3){
+                chart1.data.datasets.pop();
+                chart2.data.datasets.pop();
+            }
             var x = Math.round(0xffffff * Math.random()).toString(16);
             var y = (6 - x.length);
             var z = "000000";
@@ -61,13 +65,22 @@
             chart2.update();
         }
 
-        function appendData(chart1, chart2, value1, value2, index) {
+        function appendData(chart1, chart2, value1, value2, epoch, batch) {
+            if (chart1.data.datasets[0] === undefined){
+                appendLabel(chart1, chart2, batch)
+                addData(chart1, chart2, epoch, 3)
+            }
             chart1.data.datasets[0].data.push(value1);
             chart2.data.datasets[0].data.push(value2);
             chart1.update();
             chart2.update();
         }
-
+        function clearData(chart1, chart2, value1, value2, index) {
+                    chart1.data.datasets[0].data.push(value1);
+                    chart2.data.datasets[0].data.push(value2);
+                    chart1.update();
+                    chart2.update();
+                }
         var chart_train_accuracy
         var chart_train_loss
         var chart_test_accuracy
@@ -131,21 +144,30 @@
 
         socket.onmessage = function (e) {
             var data = JSON.parse(e.data)
-            console.log(data.accuracy)
+            console.log(data)
             if (data.method === 'train') {
-                if (data.batch === 0) {
-                    i_train = i_train + 1
-                    addData(chart_train_accuracy, chart_train_loss, i_train)
-                }
                 if (i_train === 0) {
                     appendLabel(chart_train_accuracy, chart_train_loss, data.batch)
                 }
-                appendData(chart_train_accuracy, chart_train_loss, data.accuracy, data.loss, i_train)
+
+
+                if (data.batch === 0) {
+                    i_train = i_train + 1
+                    addData(chart_train_accuracy, chart_train_loss, data.epoch, 2)
+                }
+                appendData(chart_train_accuracy, chart_train_loss, data.accuracy, data.loss, data.epoch, data.batch)
+
+
+
+
+
+
+
             }
             if (data.method === 'test') {
                 if (data.batch === 0) {
                     i_test = i_test + 1
-                    addData(chart_test_accuracy, chart_test_loss, i_test)
+                    addData(chart_test_accuracy, chart_test_loss, i_test, 2)
                 }
                 if (i_test === 0) {
                     appendLabel(chart_test_accuracy, chart_test_loss, data.batch)

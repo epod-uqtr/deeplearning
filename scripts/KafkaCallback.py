@@ -16,8 +16,8 @@ class KafkaCallback(tf.keras.callbacks.Callback):
     test_id = 0
     predict_id = 0
     bootstrap_servers = "127.0.0.1:9091"
-    consumer_group_id = "foo"
-    topic = "deeplearning_training"
+    consumer_group_id = "deeplearning"
+    topic = "deeplearning-training"
     username = "lacen"
     producer_conf = {"bootstrap.servers": bootstrap_servers}
     producer = Producer(producer_conf)
@@ -28,6 +28,7 @@ class KafkaCallback(tf.keras.callbacks.Callback):
     consumer = Consumer(consumer_conf)
     channel_layer = get_channel_layer()
     i_train = 0
+    epoch = -1
 
 
     def on_train_begin(self, logs=None):
@@ -59,11 +60,15 @@ class KafkaCallback(tf.keras.callbacks.Callback):
                  "accuracy": value["accuracy"]}
             )
 
+    def on_epoch_begin(self, epoch, logs=None):
+        self.epoch = epoch
+
     def on_train_batch_end(self, batch, logs=None):
         self.train_id += 1
         value = {
             "id": self.train_id,
             "method": "train",
+            "epoch": self.epoch,
             "batch": batch,
             "loss": logs["loss"],
             "accuracy": logs["accuracy"]
