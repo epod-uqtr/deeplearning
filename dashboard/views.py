@@ -1,3 +1,5 @@
+import uuid
+
 from django.shortcuts import render
 
 # Create your views here.
@@ -7,10 +9,7 @@ from trainingsession.models import TrainingSession
 
 
 def index(request):
-    context = {
-        'training_sessions': TrainingSession.objects.all()
-    }
-    return render(request, 'dashboard/index.html', context)
+    pass
 
 
 class TrainingSessionListView(ListView):
@@ -18,6 +17,11 @@ class TrainingSessionListView(ListView):
     template_name = 'dashboard/index.html'
     context_object_name = 'training_sessions'
     ordering = ['date_created']
+
+    def get_context_data(self, **kwargs):
+        context = super(TrainingSessionListView, self).get_context_data(**kwargs)
+        context['session_name'] = uuid.uuid4().hex
+        return context
 
 
 class TrainingSessionDetailView(DetailView):

@@ -1,3 +1,5 @@
+import uuid
+
 from django import forms
 from django.forms import TextInput, FileInput
 
@@ -23,3 +25,4 @@ class TrainingSessionForm(forms.ModelForm):
             'name': 'script',
             'data-url': "{% url 'photos:basic_upload' %}",
             'data-form-data': '{"csrfmiddlewaretoken": "{{ csrf_token }}"}'})
+

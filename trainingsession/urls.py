@@ -21,8 +21,8 @@ from django.urls import path
 from trainingsession import views
 
 urlpatterns = [
-    path('', views.index, name='trainingsession'),
-    path('report', views.report, name='report'),
+    path('<str:session_name>/', views.index, name='trainingsession'),
+    path('report/', views.report, name='report'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

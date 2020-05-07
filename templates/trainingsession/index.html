@@ -13,9 +13,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
     <script>
-
-        console.log(window.location)
-        var socket = new WebSocket('ws://' + window.location.host + window.location.pathname);
+        var ws_scheme = window.location.protocol === "https:" ? "wss" : "ws";
+        var socket = new WebSocket(ws_scheme + '://' + window.location.host + window.location.pathname);
+        console.log(socket)
         socket.onopen = function (e) {
             console.log('WebSockets onopen.');
         };
@@ -28,7 +28,7 @@
         };
 
         function addData(chart1, chart2, epoch, i) {
-            if (epoch > 0 && i < 3){
+            if (epoch > 0){
                 chart1.data.datasets.pop();
                 chart2.data.datasets.pop();
             }
@@ -66,7 +66,7 @@
         }
 
         function appendData(chart1, chart2, value1, value2, epoch, batch) {
-            if (chart1.data.datasets[0] === undefined){
+            if (chart1.data.datasets[0] === undefined ){
                 appendLabel(chart1, chart2, batch)
                 addData(chart1, chart2, epoch, 3)
             }
@@ -144,17 +144,17 @@
 
         socket.onmessage = function (e) {
             var data = JSON.parse(e.data)
-            console.log(data)
+            //console.log(data)
             if (data.method === 'train') {
                 if (i_train === 0) {
                     appendLabel(chart_train_accuracy, chart_train_loss, data.batch)
                 }
 
-
                 if (data.batch === 0) {
                     i_train = i_train + 1
                     addData(chart_train_accuracy, chart_train_loss, data.epoch, 2)
                 }
+
                 appendData(chart_train_accuracy, chart_train_loss, data.accuracy, data.loss, data.epoch, data.batch)
 
 
@@ -191,8 +191,7 @@
             <div class="card p-3">
                 <h4 class=" my-3">Neural Network Console</h4>
 
-
-                <form method="post" enctype="multipart/form-data">
+                <form  method="post" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <div class="form-group mt-2 mb-2 pl-2">
@@ -203,7 +202,6 @@
                     </div>
                     <button onclick="train" class="btn btn-info btn-md btn-block my-3">Start</button>
                 </form>
-
                 <h6 class="text-uppercase font-weight-bold mb-3">Training parameters</h6>
                 <div class="mt-2 mb-2 pl-2">
                     <div class="input-group flex-nowrap">
@@ -339,23 +337,7 @@
 {% csrf_token %}
 <script>
     function train() {
-        url = '/trainingsession/'
-        contentType = 'multipart/form-data'
-        data = $(this).serialize();
 
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            async: true,
-            contentType: contentType,
-            success: function () {
-                console.log('Form Submitted!');
-            },
-            error: function () {
-                console.log("error in ajax form submission");
-            }
-        });
 
     }
 

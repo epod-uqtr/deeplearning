@@ -83,8 +83,14 @@ WSGI_APPLICATION = 'deeplearning.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'deeplearning',
+        'USER': 'postgres',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -146,3 +152,4 @@ MEDIA_URL = '/home/lacen/PycharmProjects/deeplearning/'
 MEDIA_ROOT = os.path.join('/home/lacen/PycharmProjects/deeplearning')
 
 FILE_UPLOAD_PERMISSIONS = stat.S_IRWXU
+LOGIN_REDIRECT_URL = '/dashboard'

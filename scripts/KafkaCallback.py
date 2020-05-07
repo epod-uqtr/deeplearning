@@ -30,12 +30,15 @@ class KafkaCallback(tf.keras.callbacks.Callback):
     i_train = 0
     epoch = -1
 
+    def __init__(self, session_name):
+        super().__init__()
+        self.session_name = session_name
 
     def on_train_begin(self, logs=None):
         self.consumer.subscribe([self.topic])
 
     @classmethod
-    def consume_kafka_messages(cls):
+    def consume_kafka_messages(self, cls):
         print("---------------")
         msg = cls.consumer.poll()
 
@@ -50,7 +53,7 @@ class KafkaCallback(tf.keras.callbacks.Callback):
             print(value["batch"])
 
             async_to_sync(cls.channel_layer.group_send)(
-                "zinnour",
+                self.session_name,
                 {"type": "train.consume_msg",
                  "key": msg.key(),
                  "id": value["id"],
@@ -77,7 +80,7 @@ class KafkaCallback(tf.keras.callbacks.Callback):
         self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
                               callback=self.delivery_report)
         if batch % 10 == 0:
-            async_to_sync(self.channel_layer.group_send)("zinnour",
+            async_to_sync(self.channel_layer.group_send)(self.session_name,
                 {"type": "training_session_message",
                  'data': json.dumps(value)})
         self.i_train = self.i_train + 1
@@ -96,7 +99,7 @@ class KafkaCallback(tf.keras.callbacks.Callback):
         self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
                               callback=self.delivery_report)
 
-        async_to_sync(self.channel_layer.group_send)("zinnour",
+        async_to_sync(self.channel_layer.group_send)(self.session_name,
             {"type": "training_session_message",
              'data': json.dumps(value)})
 
