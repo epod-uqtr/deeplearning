@@ -18,6 +18,23 @@
 <body>
 
 <div class="container-fluid p-0">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand " href="{% url 'dashboard' %}">Intégration santé</a>
+
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                            <span class="navbar-text" style="color:white;">
+                              {{ user.username }}
+                            </span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}" style="color:white;">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
     <div class="row">
         <div class="col-md-3  p-0">
 
@@ -26,29 +43,32 @@
 
                 <div class="list-group">
 
-                    <a class="list-group-item " href="{% url 'dashboard' %}" role="button">Intégration santé</a>
                     <a class="list-group-item list-group-item-action " href="{% url 'dashboard' %}" role="button">All
                         sessions</a>
-                    <a class="list-group-item list-group-item-action " href="{% url 'trainingsession' session_name %}" role="button">New
+                    <a class="list-group-item list-group-item-action " href="{% url 'trainingsession' session_name %}"
+                       role="button">New
                         session</a>
+                    {% comment %}
                     {% if user.is_authenticated %}
                         You name is: {{ user.username }}
                     {% else %}
                         You are not logged in.
                     {% endif %}
+{% endcomment %}
 
                 </div>
             </div>
 
         </div>
         <div class="col-md-9  px-3">
+
             <section class="pt-5 pb-5">
                 <div class="container">
                     <div class="row w-100">
                         <div class="col-lg-12 col-md-12 col-12">
                             <h3 class="display-5 mb-2 text-center">All training sessions</h3>
                             <p class="mb-5 text-center">
-                                <i class="text-info font-weight-bold">3</i> training session</p>
+                                <i class="text-info font-weight-bold">{{ sessions_number }}</i> training session</p>
                             <table id="shoppingCart" class="table table-condensed table-responsive table-hover">
                                 <thead>
                                 <tr>
@@ -60,7 +80,12 @@
                                 </thead>
                                 <tbody>
                                 {% for session in training_sessions %}
-                                    <tr class="table-row" data-href="{% url 'session-detail' session.pk %}">
+                                    {% if session.state %}
+                                        {% url 'session-detail' session.session_name as session_url %}
+                                    {% else %}
+                                        {% url 'trainingsession' session.session_name  as session_url %}
+                                    {% endif %}
+                                    <tr class="table-row" data-href="{{ session_url }}">
                                         <td data-th="type">
                                             <div class="row">
                                                 <div class="col-md-3 text-left">
@@ -72,8 +97,12 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td data-th="state">{{ session.state }}</td>
-                                        <td data-th="date">{{ session.date_created|date:"Y-m-d" }}</td>
+                                        <td data-th="state">{% if session.state %}
+                                            Finished
+                                        {% else %}
+                                            In progress
+                                        {% endif %}</td>
+                                        <td data-th="date">{{ session.date_created|date:"Y-m-d" }} {{ session.date_created|time:"g:i A e" }}</td>
                                         <td class="actions" data-th="">
                                             <div class="text-right">
                                                 <button class="btn btn-white border-secondary bg-white btn-md mb-2">

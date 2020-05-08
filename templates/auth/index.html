@@ -1,10 +1,48 @@
-<!DOCTYPE html>
+{% load static %}
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{% static 'auth/css/style.css' %}" type="text/css">
+
+    <title>Login</title>
 </head>
 <body>
-auth
+<div class="container login-container">
+    {% if form.errors %}
+    <p>There's something wrong with what you entered!</p>
+    {% endif %}
+
+    {% if next %}
+    <p>Hey, you can't access that page.</p>
+    {% endif %}
+    <div class="row">
+        <div class="col-md-6 login-form-1">
+            <h3>Login for Form 1</h3>
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>
+                        <input type="text" class="form-control" placeholder="Your Email *" value="{{ form.username }}"/>
+                    </label>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Your Password *" value="{{ form.password }}"/>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btnSubmit" value="Login"/>
+                </div>
+                <div class="form-group">
+                    <a href="#" class="ForgetPwd">Forget Password?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 </body>
 </html>

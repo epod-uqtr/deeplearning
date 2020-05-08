@@ -144,7 +144,7 @@
 
         socket.onmessage = function (e) {
             var data = JSON.parse(e.data)
-            //console.log(data)
+            console.log(data)
             if (data.method === 'train') {
                 if (i_train === 0) {
                     appendLabel(chart_train_accuracy, chart_train_loss, data.batch)
@@ -294,8 +294,10 @@
         <div class="col-md-9">
             <div class="card p-3 mb-3">
                 <div class="row px-3">
-                    <input class="btn btn-primary col-3" type="button" value="Start">
+                    <a class="btn btn-primary col-3" href="{% url 'dashboard' %}" role="button">Dashboard</a>
+
                 </div>
+
             </div>
             <div class="card p-3 mb-3">
                 <canvas id="train_accuracy_chart" width="800" height="450"></canvas>

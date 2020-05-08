@@ -23,16 +23,18 @@ def index(request, session_name):
     if request.method == 'POST':
         form = TrainingSessionForm(request.POST, request.FILES)
         if form.is_valid():
-            instance = TrainingSession(state='In progress',
-                                       type=form.cleaned_data['type'],
-                                       script=request.FILES['script'])
-            channel_layer = get_channel_layer()
+            instance = TrainingSession.objects.create(state=False,
+                                                      type=form.cleaned_data['type'],
+                                                      script=request.FILES['script'],
+                                                      session_name=session_name,
+                                                      searcher=request.user)
             print("+++ " + str(session_name))
-            async_to_sync(channel_layer.group_add)(session_name, session_name)
-            instance.save()
             exec_script(instance, session_name)
+            TrainingSession.objects.filter(pk=instance.pk).update(state=True)
 
-        return HttpResponse('<h1>Report</h1>')
+        return render(request, 'trainingsession/report.html', {
+            'session_name': session_name
+        })
     else:
         form = TrainingSessionForm()
         return render(request, 'trainingsession/index.html', {

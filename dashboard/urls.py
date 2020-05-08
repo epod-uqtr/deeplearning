@@ -21,5 +21,5 @@ from dashboard.views import TrainingSessionListView, TrainingSessionDetailView
 
 urlpatterns = [
     path('', TrainingSessionListView.as_view(), name='dashboard'),
-    path('session/<int:pk>/', TrainingSessionDetailView.as_view(), name='session-detail'),
+    path('report/session/<str:session_name>/', TrainingSessionDetailView.as_view(), name='session-detail'),
 ]

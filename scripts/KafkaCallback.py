@@ -26,13 +26,14 @@ class KafkaCallback(tf.keras.callbacks.Callback):
                      "group.id": consumer_group_id,
                      "auto.offset.reset": "earliest"}
     consumer = Consumer(consumer_conf)
-    channel_layer = get_channel_layer()
     i_train = 0
     epoch = -1
+    channel_layer = get_channel_layer()
 
     def __init__(self, session_name):
         super().__init__()
         self.session_name = session_name
+        print("---------------  session_name= "+ session_name)
 
     def on_train_begin(self, logs=None):
         self.consumer.subscribe([self.topic])
@@ -81,7 +82,7 @@ class KafkaCallback(tf.keras.callbacks.Callback):
                               callback=self.delivery_report)
         if batch % 10 == 0:
             async_to_sync(self.channel_layer.group_send)(self.session_name,
-                {"type": "training_session_message",
+                {'type': "training_session_message",
                  'data': json.dumps(value)})
         self.i_train = self.i_train + 1
         # self.producer.flush()
