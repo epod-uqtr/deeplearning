@@ -2,6 +2,7 @@ import os
 import subprocess
 
 import tensorflow as tf
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from trainingsession.forms import TrainingSessionForm
@@ -38,6 +39,7 @@ METRICS = [
 ]
 
 
+@login_required(login_url='/login/')
 def index(request, session_name):
     print("--- " + str(session_name))
     if request.method == 'POST':
@@ -65,7 +67,10 @@ def index(request, session_name):
                                                       optimizer=OPTIMIZERS[int(optimizer) - 1][2],
                                                       loss=LOSS[int(loss) - 1][2],
                                                       metrics=METRICS[int(metrics) - 1][2])
-            exec_script(instance, session_name, int(epochs), int(batch_size), OPTIMIZERS[int(optimizer) - 1][2], LOSS[int(loss) - 1][1].name, METRICS[int(metrics) - 1][1])
+            metr = []
+            metr.append(METRICS[int(metrics) - 1][1])
+            exec_script(instance, session_name, int(epochs), int(batch_size), OPTIMIZERS[int(optimizer) - 1][2],
+                        LOSS[int(loss) - 1][1].name, METRICS[int(metrics) - 1][1])
             TrainingSession.objects.filter(pk=instance.pk).update(state=True)
 
         return render(request, 'trainingsession/report.html', {

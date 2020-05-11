@@ -1,5 +1,6 @@
 import uuid
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Create your views here.
@@ -36,4 +37,3 @@ class TrainingSessionDetailView(DetailView):
     context_object_name = 'training_session'
     slug_field = "session_name"
     slug_url_kwarg = "session_name"
-

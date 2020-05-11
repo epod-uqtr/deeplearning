@@ -8,15 +8,9 @@ from tensorflow import keras
 import numpy as np
 
 from scripts.KafkaCallback import KafkaCallback
-import tensorflow_io as tfio
 
 
 def main(session_name, epochs, batch_size, optimizer, loss, metrics):
-    # kafka_dataset = tfio.kafka.KafkaDataset(
-    #     topics='deeplearnint_training_1', servers='localhost', group='', eof=False, timeout=1000,
-    #     config_global=None, config_topic=None, message_key=False
-    # )
-
     fashion_mnist = keras.datasets.fashion_mnist
     (train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 

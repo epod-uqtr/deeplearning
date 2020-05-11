@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# DEBUG = False
+#
+# ALLOWED_HOSTS = ['127.0.0.1']
 
 # Application definition
 
@@ -152,4 +155,5 @@ MEDIA_URL = '/home/lacen/PycharmProjects/deeplearning/'
 MEDIA_ROOT = os.path.join('/home/lacen/PycharmProjects/deeplearning')
 
 FILE_UPLOAD_PERMISSIONS = stat.S_IRWXU
+LOGIN_URL = '/pp'
 LOGIN_REDIRECT_URL = '/dashboard'
