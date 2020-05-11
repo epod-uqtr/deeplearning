@@ -14,9 +14,14 @@ def upload_to_user(instance, filename):
 
 
 class TrainingSession(models.Model):
-    session_name = models.CharField(max_length=200)
+    session_name = models.CharField(max_length=200, default='')
+    batch_size = models.IntegerField(default=64)
+    epochs = models.IntegerField(default=10)
+    optimizer = models.CharField(max_length=100, default='')
+    loss = models.CharField(max_length=100, default='')
+    metrics = models.CharField(max_length=50, default='')
     state = models.BooleanField()
-    type = models.CharField(max_length=50)
+    type = models.CharField(max_length=50, default='')
     date_created = models.DateTimeField(default=datetime.now, blank=True)
     script = models.FileField(upload_to=upload_to_user, default='')
     searcher = models.ForeignKey(User, on_delete=models.CASCADE, null=True)

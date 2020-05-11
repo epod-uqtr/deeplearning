@@ -20,7 +20,7 @@ def main(session_name, epochs, batch_size, optimizer, loss, metrics):
         keras.layers.Dense(10)
     ])
     model.compile(optimizer=optimizer,
-                  loss=loss,
+                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
                   metrics=metrics)
     model.fit(train_images, train_labels, epochs=epochs, batch_size=batch_size, callbacks=[KafkaCallback(session_name)])
     test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2, callbacks=[KafkaCallback(session_name)])
@@ -30,8 +30,8 @@ def main(session_name, epochs, batch_size, optimizer, loss, metrics):
 
 if __name__ == "__main__":
     main(session_name=sys.argv[1],
-         epochs=int(sys.argv[2]),
-         batch_size=int(sys.argv[3]),
+         epochs=sys.argv[2],
+         batch_size=sys.argv[3],
          optimizer=sys.argv[4],
          loss=sys.argv[5],
          metrics=sys.argv[6])

@@ -30,8 +30,8 @@ def main(session_name, epochs, batch_size, optimizer, loss, metrics):
 
 if __name__ == "__main__":
     main(session_name=sys.argv[1],
-         epochs=int(sys.argv[2]),
-         batch_size=int(sys.argv[3]),
+         epochs=sys.argv[2],
+         batch_size=sys.argv[3],
          optimizer=sys.argv[4],
          loss=sys.argv[5],
          metrics=sys.argv[6])
