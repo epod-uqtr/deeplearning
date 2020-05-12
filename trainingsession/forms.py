@@ -58,7 +58,7 @@ class TrainingSessionForm(forms.ModelForm):
             'type': 'text',
             'class': 'form-control mb-3',
             'name': 'type',
-            'placeholder': 'Trainer name'})
+            'placeholder': 'Model name'})
         self.fields['script'].widget = FileInput(attrs={
             'type': 'file',
             'class': 'form-control-file',
