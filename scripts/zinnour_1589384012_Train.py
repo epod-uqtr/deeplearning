@@ -130,4 +130,4 @@ if __name__ == "__main__":
          batch_size=int(sys.argv[3]),
          optimizer=sys.argv[4],
          loss=LOSS[int(sys.argv[5]) - 1][1],
-         metrics=sys.argv[6])
+         metrics=METRICS)

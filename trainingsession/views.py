@@ -49,12 +49,6 @@ def index(request, session_name):
             batch_size = form.cleaned_data['batch_size']
             optimizer = form.cleaned_data['optimizer']
             loss = form.cleaned_data['loss']
-            print("+++ " + str(session_name))
-            print("+++epochs " + str(epochs))
-            print("+++batch_size " + str(batch_size))
-            print("+++optimizer " + str(optimizer))
-            print("+++loss " + str(loss))
-            print("+++loss " + str(LOSS[int(loss) - 1][1].name))
             instance = TrainingSession.objects.create(session_name=session_name,
                                                       state=False,
                                                       type=form.cleaned_data['type'],
@@ -65,7 +59,7 @@ def index(request, session_name):
                                                       optimizer=OPTIMIZERS[int(optimizer) - 1][2],
                                                       loss=LOSS[int(loss) - 1][2])
             exec_script(instance, session_name, int(epochs), int(batch_size), OPTIMIZERS[int(optimizer) - 1][2],
-                            LOSS[int(loss) - 1][0])
+                            LOSS[int(loss) - 1][0], METRICS[int(1) - 1][1])
 
             TrainingSession.objects.filter(pk=instance.pk).update(state=True)
 
@@ -83,11 +77,12 @@ def report(request):
     pass
 
 
-def exec_script(instance, session_name, epochs, batch_size, optimizer, loss):
+def exec_script(instance, session_name, epochs, batch_size, optimizer, loss, metrics):
     script_path = os.path.join('/home/lacen/PycharmProjects/deeplearning', str(instance.script))
     return subprocess.call(["python", script_path,
                             str(session_name),
                             str(epochs),
                             str(batch_size),
                             str(optimizer),
-                            str(loss)])
+                            str(loss),
+                            str(metrics)])

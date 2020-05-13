@@ -55,8 +55,8 @@ def main(session_name, epochs, batch_size, optimizer, loss, metrics):
     print("Total training images:", total_train)
     print("Total validation images:", total_val)
 
-    # batch_size = 128
-    # epochs = 15
+    batch_size = 64
+    epochs = 15
     IMG_HEIGHT = 150
     IMG_WIDTH = 150
     train_image_generator = ImageDataGenerator(rescale=1. / 255)  # Generator for our training data
@@ -86,10 +86,20 @@ def main(session_name, epochs, batch_size, optimizer, loss, metrics):
     # model.compile(optimizer=optimizer,
     #               loss=loss,
     #               metrics=metrics)
-
-    model.compile(optimizer=optimizer,
-                  loss=loss,
-                  metrics=metrics)
+    METRICS = [
+        keras.metrics.TruePositives(name='tp'),
+        keras.metrics.FalsePositives(name='fp'),
+        keras.metrics.TrueNegatives(name='tn'),
+        keras.metrics.FalseNegatives(name='fn'),
+        keras.metrics.BinaryAccuracy(name='accuracy'),
+        keras.metrics.Precision(name='precision'),
+        keras.metrics.Recall(name='recall'),
+        keras.metrics.AUC(name='auc'),
+        CategoricalTruePositives(1, 128)
+    ]
+    model.compile(optimizer='adam',
+                  loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
+                  metrics=METRICS)
     model.summary()
 
     # model.fit(train_images, train_labels, epochs=epochs, batch_size=batch_size, callbacks=[KafkaCallback(session_name)])
@@ -108,7 +118,12 @@ def main(session_name, epochs, batch_size, optimizer, loss, metrics):
 
 
 if __name__ == "__main__":
-
+    METRICS = [
+        'accuracy',
+        CategoricalTruePositives(10, 64),
+        CategoricalTrueNegatives(10, 64),
+        CategoricalFalsePositives(10, 64)
+    ]
     LOSS = [
         (1, tf.keras.losses.BinaryCrossentropy(from_logits=True), 'Binary crossentropy'),
         (2, tf.keras.losses.CategoricalCrossentropy(from_logits=True), 'Categorical crossentropy'),
@@ -130,4 +145,4 @@ if __name__ == "__main__":
          batch_size=int(sys.argv[3]),
          optimizer=sys.argv[4],
          loss=LOSS[int(sys.argv[5]) - 1][1],
-         metrics=sys.argv[6])
+         metrics=METRICS)
