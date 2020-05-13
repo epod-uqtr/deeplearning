@@ -9,6 +9,7 @@ from confluent_kafka import Consumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
+import keras
 
 
 class KafkaCallback(tf.keras.callbacks.Callback):
@@ -78,6 +79,7 @@ class KafkaCallback(tf.keras.callbacks.Callback):
             "loss": logs["loss"],
             "accuracy": logs["accuracy"]
         }
+        print(value)
         self.producer.poll(0)
         self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
                               callback=self.delivery_report)
@@ -105,18 +107,8 @@ class KafkaCallback(tf.keras.callbacks.Callback):
             {"type": "training_session_message",
              'data': json.dumps(value)})
 
-    def on_predict_batch_end(self, batch, logs=None):
-        self.predict_id += 1
-        value = {
-            "id": self.predict_id,
-            "method": "predict",
-            "batch": batch,
-            "loss": logs["loss"],
-            "accuracy": logs["accuracy"]
-        }
-        self.producer.poll(0)
-        self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
-                              callback=self.delivery_report)
+    def on_epoch_end(self, epoch, logs=None):
+        return super().on_epoch_end(epoch, logs)
 
     @staticmethod
     def delivery_report(err, msg):
@@ -128,5 +120,5 @@ class KafkaCallback(tf.keras.callbacks.Callback):
             print("Message delivered to {} [{}]".format(msg.topic(), msg.partition()))
             # KafkaCallback.consume_kafka_messages()
 
-    def on_predict_end(self, logs=None):
-        self.consumer.close()
+
+

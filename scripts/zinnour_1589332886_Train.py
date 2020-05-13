@@ -1,15 +1,16 @@
-# TensorFlow and keras
+# TensorFlow and tf.keras
 import sys
 
 import tensorflow as tf
+from tensorflow import keras
 
 # Helper libraries
 import numpy as np
 
 from scripts.KafkaCallback import KafkaCallback
-# import tensorflow_io as tfio
+#import tensorflow_io as tfio
 import keras_metrics as km
-import keras
+
 
 def main(session_name, epochs, batch_size, optimizer, loss, metrics):
     # kafka_dataset = tfio.kafka.KafkaDataset(
@@ -37,22 +38,28 @@ def main(session_name, epochs, batch_size, optimizer, loss, metrics):
 if __name__ == "__main__":
     METRICS = [
         'accuracy',
+        km.precision(),
+        km.recall(),
+        km.true_positive(),
+        km.true_negative(),
+        km.false_positive(),
+        km.false_negative(),
     ]
     LOSS = [
-        (1, keras.losses.BinaryCrossentropy(from_logits=True), 'Binary crossentropy'),
-        (2, keras.losses.CategoricalCrossentropy(from_logits=True), 'Categorical crossentropy'),
-        (3, keras.losses.CategoricalHinge(), 'Categorical hinge'),
-        (5, keras.losses.Hinge(), 'Hinge'),
-        (5, keras.losses.Hinge(), 'Hinge'),
-        (6, keras.losses.Huber(), 'Huber'),
-        (7, keras.losses.SquaredHinge(), 'Squared hinge'),
-        (8, keras.losses.LogCosh(), 'Hyperbolic Cosine'),
-        (9, keras.losses.MeanAbsoluteError(), 'Mean absolute error'),
-        (10, keras.losses.MeanAbsolutePercentageError(), 'Mean absolute percentage error'),
-        (11, keras.losses.MeanSquaredError(), 'Mean squared error'),
-        (12, keras.losses.MeanSquaredLogarithmicError(), 'Mean squared logarithmic error (MSLE)'),
-        (13, keras.losses.Poisson(), 'Poisson'),
-        (14, keras.losses.SparseCategoricalCrossentropy(from_logits=True), 'Sparse categorical crossentropy'),
+        (1, tf.keras.losses.BinaryCrossentropy(from_logits=True), 'Binary crossentropy'),
+        (2, tf.keras.losses.CategoricalCrossentropy(from_logits=True), 'Categorical crossentropy'),
+        (3, tf.keras.losses.CategoricalHinge(), 'Categorical hinge'),
+        (4, tf.keras.losses.CosineSimilarity(), 'Cosine similarity'),
+        (5, tf.keras.losses.Hinge(), 'Hinge'),
+        (6, tf.keras.losses.Huber(), 'Huber'),
+        (7, tf.keras.losses.SquaredHinge(), 'Squared hinge'),
+        (8, tf.keras.losses.LogCosh(), 'Hyperbolic Cosine'),
+        (9, tf.keras.losses.MeanAbsoluteError(), 'Mean absolute error'),
+        (10, tf.keras.losses.MeanAbsolutePercentageError(), 'Mean absolute percentage error'),
+        (11, tf.keras.losses.MeanSquaredError(), 'Mean squared error'),
+        (12, tf.keras.losses.MeanSquaredLogarithmicError(), 'Mean squared logarithmic error (MSLE)'),
+        (13, tf.keras.losses.Poisson(), 'Poisson'),
+        (14, tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), 'Sparse categorical crossentropy'),
     ]
     main(session_name=sys.argv[1],
          epochs=int(sys.argv[2]),

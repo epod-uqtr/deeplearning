@@ -10,7 +10,7 @@ OPTIMIZERS = [
     (2, 'Adagrad'),
     (3, 'Adam'),
     (4, 'Adamax'),
-    (5, 'FTRL'),
+    (6, 'NAdam'),
     (6, 'NAdam'),
     (7, 'RMSprop'),
     (8, 'SGD'),
@@ -19,7 +19,7 @@ LOSS = [
     (1, 'Binary crossentropy'),
     (2, 'Categorical crossentropy'),
     (3, 'Categorical hinge'),
-    (4, 'Cosine similarity'),
+    (5, 'Hinge'),
     (5, 'Hinge'),
     (6, 'Huber'),
     (7, 'Squared hinge'),
@@ -49,7 +49,7 @@ METRICS = [
 class TrainingSessionForm(forms.ModelForm):
     class Meta:
         model = TrainingSession
-        fields = ['type', 'script', 'epochs', 'batch_size', 'optimizer', 'loss', 'metrics']
+        fields = ['type', 'script', 'epochs', 'batch_size', 'optimizer', 'loss']
 
     def __init__(self, *args, **kwargs):
         super(TrainingSessionForm, self).__init__(*args, **kwargs)
@@ -83,4 +83,3 @@ class TrainingSessionForm(forms.ModelForm):
             'aria-describedby': 'addon-wrapping'})
         self.fields['optimizer'].widget = Select(attrs={'class': 'form-control'}, choices=OPTIMIZERS)
         self.fields['loss'].widget = Select(attrs={'class': 'form-control'}, choices=LOSS)
-        self.fields['metrics'].widget = Select(attrs={'class': 'form-control'}, choices=METRICS)

@@ -19,7 +19,6 @@ class TrainingSession(models.Model):
     epochs = models.IntegerField(default=10)
     optimizer = models.CharField(max_length=100, default='')
     loss = models.CharField(max_length=100, default='')
-    metrics = models.CharField(max_length=50, default='')
     state = models.BooleanField()
     type = models.CharField(max_length=50, default='')
     date_created = models.DateTimeField(default=datetime.now, blank=True)
