@@ -9,7 +9,6 @@ from confluent_kafka import Consumer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
-import keras
 
 
 class KafkaCallback(tf.keras.callbacks.Callback):
@@ -79,36 +78,33 @@ class KafkaCallback(tf.keras.callbacks.Callback):
             "loss": logs["loss"],
             "accuracy": logs["accuracy"]
         }
-        print(value)
         self.producer.poll(0)
         self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
                               callback=self.delivery_report)
-        if batch % 10 == 0:
-            async_to_sync(self.channel_layer.group_send)(self.session_name,
-                {'type': "training_session_message",
-                 'data': json.dumps(value)})
+        # if batch % 10 == 0:
+        async_to_sync(self.channel_layer.group_send)(self.session_name,
+            {'type': "training_session_message",
+             'data': json.dumps(value)})
         self.i_train = self.i_train + 1
         # self.producer.flush()
 
-    def on_test_batch_end(self, batch, logs=None):
-        self.test_id += 1
-        value = {
-            "id": self.test_id,
-            "method": "test",
-            "batch": batch,
-            "loss": logs["loss"],
-            "accuracy": logs["accuracy"]
-        }
-        self.producer.poll(0)
-        self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
-                              callback=self.delivery_report)
+    # def on_test_batch_end(self, batch, logs=None):
+    #     self.test_id += 1
+    #     value = {
+    #         "id": self.test_id,
+    #         "method": "test",
+    #         "batch": batch,
+    #         "loss": logs["loss"],
+    #         "accuracy": logs["accuracy"]
+    #     }
+    #     self.producer.poll(0)
+    #     self.producer.produce(self.topic, key=self.username + "_" + str(self.time), value=str(value),
+    #                           callback=self.delivery_report)
+    #
+    #     async_to_sync(self.channel_layer.group_send)(self.session_name,
+    #         {"type": "training_session_message",
+    #          'data': json.dumps(value)})
 
-        async_to_sync(self.channel_layer.group_send)(self.session_name,
-            {"type": "training_session_message",
-             'data': json.dumps(value)})
-
-    def on_epoch_end(self, epoch, logs=None):
-        return super().on_epoch_end(epoch, logs)
 
     @staticmethod
     def delivery_report(err, msg):

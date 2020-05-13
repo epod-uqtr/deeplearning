@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-import keras
+import tensorflow as tf
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
@@ -9,30 +9,30 @@ from trainingsession.forms import TrainingSessionForm
 from trainingsession.models import TrainingSession
 
 OPTIMIZERS = [
-    (1, keras.optimizers.Adadelta(), 'Adadelta'),
-    (2, keras.optimizers.Adagrad(), 'Adagrad'),
-    (3,  keras.optimizers.Adam(), 'Adam'),
-    (4,  keras.optimizers.Adamax(), 'Adamax'),
-    (6,  keras.optimizers.Nadam(), 'NAdam'),
-    (6,  keras.optimizers.Nadam(), 'NAdam'),
-    (7,  keras.optimizers.RMSprop(), 'RMSprop'),
-    (8,  keras.optimizers.SGD(), 'SGD'),
+    (1, tf.keras.optimizers.Adadelta(), 'Adadelta'),
+    (2, tf.keras.optimizers.Adagrad(), 'Adagrad'),
+    (3, tf.keras.optimizers.Adam(), 'Adam'),
+    (4, tf.keras.optimizers.Adamax(), 'Adamax'),
+    (5, tf.keras.optimizers.Ftrl(), 'FTRL'),
+    (6, tf.keras.optimizers.Nadam(), 'NAdam'),
+    (7, tf.keras.optimizers.RMSprop(), 'RMSprop'),
+    (8, tf.keras.optimizers.SGD(), 'SGD'),
 ]
 LOSS = [
-    (1, keras.losses.BinaryCrossentropy(), 'Binary crossentropy'),
-    (2, keras.losses.CategoricalCrossentropy(), 'Categorical crossentropy'),
-    (3, keras.losses.CategoricalHinge(), 'Categorical hinge'),
-    (5, keras.losses.Hinge(), 'Hinge'),
-    (5, keras.losses.Hinge(), 'Hinge'),
-    (6, keras.losses.Huber(), 'Huber'),
-    (7, keras.losses.SquaredHinge(), 'Squared hinge'),
-    (8, keras.losses.LogCosh(), 'Hyperbolic Cosine'),
-    (9, keras.losses.MeanAbsoluteError(), 'Mean absolute error'),
-    (10, keras.losses.MeanAbsolutePercentageError(), 'Mean absolute percentage error'),
-    (11, keras.losses.MeanSquaredError(), 'Mean squared error'),
-    (12, keras.losses.MeanSquaredLogarithmicError(), 'Mean squared logarithmic error (MSLE)'),
-    (13, keras.losses.Poisson(), 'Poisson'),
-    (14, keras.losses.SparseCategoricalCrossentropy(from_logits=True), 'Sparse categorical crossentropy'),
+    (1, tf.keras.losses.BinaryCrossentropy(), 'Binary crossentropy'),
+    (2, tf.keras.losses.CategoricalCrossentropy(), 'Categorical crossentropy'),
+    (3, tf.keras.losses.CategoricalHinge(), 'Categorical hinge'),
+    (4, tf.keras.losses.CosineSimilarity(), 'Cosine similarity'),
+    (5, tf.keras.losses.Hinge(), 'Hinge'),
+    (6, tf.keras.losses.Huber(), 'Huber'),
+    (7, tf.keras.losses.SquaredHinge(), 'Squared hinge'),
+    (8, tf.keras.losses.LogCosh(), 'Hyperbolic Cosine'),
+    (9, tf.keras.losses.MeanAbsoluteError(), 'Mean absolute error'),
+    (10, tf.keras.losses.MeanAbsolutePercentageError(), 'Mean absolute percentage error'),
+    (11, tf.keras.losses.MeanSquaredError(), 'Mean squared error'),
+    (12, tf.keras.losses.MeanSquaredLogarithmicError(), 'Mean squared logarithmic error (MSLE)'),
+    (13, tf.keras.losses.Poisson(), 'Poisson'),
+    (14, tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True), 'Sparse categorical crossentropy'),
 ]
 METRICS = [
     (1, 'accuracy', 'Accuracy'),

@@ -81,24 +81,14 @@ def main(session_name, epochs, batch_size, optimizer, loss, metrics):
         MaxPooling2D(),
         Flatten(),
         Dense(512, activation='relu'),
-        Dense(1, activation='sigmoid')
+        Dense(1)
     ])
     # model.compile(optimizer=optimizer,
     #               loss=loss,
     #               metrics=metrics)
-    METRICS = [
-        keras.metrics.TruePositives(name='tp'),
-        keras.metrics.FalsePositives(name='fp'),
-        keras.metrics.TrueNegatives(name='tn'),
-        keras.metrics.FalseNegatives(name='fn'),
-        keras.metrics.BinaryAccuracy(name='accuracy'),
-        keras.metrics.Precision(name='precision'),
-        keras.metrics.Recall(name='recall'),
-        keras.metrics.AUC(name='auc'),
-    ]
     model.compile(optimizer='adam',
                   loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-                  metrics=METRICS)
+                  metrics=['accuracy'])
     model.summary()
 
     # model.fit(train_images, train_labels, epochs=epochs, batch_size=batch_size, callbacks=[KafkaCallback(session_name)])
