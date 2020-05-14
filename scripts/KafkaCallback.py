@@ -68,7 +68,7 @@ class KafkaCallback(tf.keras.callbacks.Callback):
         self.epoch = epoch
 
     def on_train_batch_end(self, batch, logs=None):
-        print(logs)
+        #print(logs)
         self.train_id += 1
         value = {
             "id": self.train_id,
